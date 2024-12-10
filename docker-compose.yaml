@@ -1,0 +1,13 @@
+services:
+  apartments:
+    build:
+      context: .
+      dockerfile: ./dockerfile
+      target: development
+    command: npm run start:dev 
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/usr/src/app
+  mongo:
+    image: mongo
