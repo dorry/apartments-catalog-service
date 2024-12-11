@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { StorageService } from './storage.service';
+import { LocalStorageService } from './local-storage.service';
 import { MulterModule } from '@nestjs/platform-express/multer';
 import { diskStorage } from 'multer';
 
@@ -12,7 +12,7 @@ import { diskStorage } from 'multer';
       }),
     }),
   ],
-  providers: [StorageService],
-  exports: [StorageService],
+  providers: [LocalStorageService],
+  exports: [LocalStorageService],
 })
-export class StorageModule {}
+export class LocalStorageModule {}

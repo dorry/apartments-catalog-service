@@ -1,11 +1,4 @@
-import {
-  IsString,
-  IsNotEmpty,
-  IsArray,
-  IsUrl,
-  ArrayNotEmpty,
-  IsNumber,
-} from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateApartmentDto {
   @IsString()
@@ -16,11 +9,11 @@ export class CreateApartmentDto {
   @IsNotEmpty()
   number: string;
 
-  @IsNumber()
+  // @IsNumber()
   @IsNotEmpty()
   size: number;
 
-  @IsNumber()
+  // @IsNumber()
   @IsNotEmpty()
   price: number;
 

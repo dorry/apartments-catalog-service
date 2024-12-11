@@ -4,13 +4,14 @@ import { ApartmentsController } from './apartments.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Apartment, ApartmentSchema } from './entities/apartments.schema';
 import { DatabaseModule } from 'src/common/database/database.module';
-import { StorageModule } from 'src/common/storage/storage.module';
 import { ApartmentsRepository } from './apartments.repository';
+import { MinioStorageModule } from 'src/common/storage/minio-storage/minio-storage.module';
 
 @Module({
   imports: [
     DatabaseModule,
-    StorageModule,
+    // LocalStorageModule,
+    MinioStorageModule,
     MongooseModule.forFeature([
       { name: Apartment.name, schema: ApartmentSchema },
     ]),

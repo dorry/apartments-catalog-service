@@ -11,7 +11,7 @@ export class ApartmentsController {
 
   @Post()
   @UseInterceptors(
-    FilesInterceptor('files', 10, {
+    FilesInterceptor('files', 4, {
       storage: diskStorage({ destination: './uploads' }),
     }),
   )

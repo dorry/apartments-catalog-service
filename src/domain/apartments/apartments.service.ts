@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { CreateApartmentDto } from './dto/create-apartment.dto';
 import { Apartment } from './entities/apartments.schema';
 import { ApartmentsRepository } from './apartments.repository';
-import { StorageService } from 'src/common/storage/storage.service';
+import { MinioStorageService } from 'src/common/storage/minio-storage/minio-storage.service';
 
 @Injectable()
 export class ApartmentsService {
   constructor(
-    private readonly storageService: StorageService,
+    private readonly minioStorageService: MinioStorageService,
     private apartmentRepository: ApartmentsRepository,
   ) {}
 
@@ -15,17 +15,18 @@ export class ApartmentsService {
     createApartmentDto: CreateApartmentDto,
     imagesArray: Array<Express.Multer.File>,
   ): Promise<Apartment> {
-    const uploadImages = await Promise.all(
-      imagesArray.map((image) => {
-        return this.storageService.handleImageUpload(image);
-      }),
-    );
-    console.log(uploadImages);
-    const doc = new Apartment({
+    // const uploadImages = await Promise.all(
+    //   imagesArray.map((image) => {
+    //     return this.minioStorageService.uploadFile(image);
+    //   }),
+    // );
+    const fileName = await this.minioStorageService.bucketExists();
+    console.log(fileName);
+    const doc = {
       ...createApartmentDto,
-      //   images: uploadImages,
-    });
-
+      images: ['test'],
+    };
+    console.log(doc);
     const createdApartment = await this.apartmentRepository.create(doc);
 
     return createdApartment;

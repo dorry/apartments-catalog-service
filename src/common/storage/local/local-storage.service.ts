@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 
 @Injectable()
-export class StorageService {
+export class LocalStorageService {
   async handleImageUpload(
     file: Express.Multer.File,
   ): Promise<Express.Multer.File> {

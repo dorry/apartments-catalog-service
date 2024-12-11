@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { StorageService } from './storage.service';
+import { MinioStorageService } from './minio-storage.service';
 
-describe('StorageService', () => {
-  let service: StorageService;
+describe('MinioStorageService', () => {
+  let service: MinioStorageService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [StorageService],
+      providers: [MinioStorageService],
     }).compile();
 
-    service = module.get<StorageService>(StorageService);
+    service = module.get<MinioStorageService>(MinioStorageService);
   });
 
   it('should be defined', () => {
