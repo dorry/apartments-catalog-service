@@ -3,9 +3,9 @@ import { ApartmentsService } from './apartments.service';
 import { ApartmentsController } from './apartments.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Apartment, ApartmentSchema } from './entities/apartments.schema';
-import { DatabaseModule } from 'src/common/database/database.module';
+import { DatabaseModule } from '../../common/database/database.module';
 import { ApartmentsRepository } from './apartments.repository';
-import { MinioStorageModule } from 'src/common/storage/minio-storage/minio-storage.module';
+import { MinioStorageModule } from '../../common/storage/minio-storage/minio-storage.module';
 
 @Module({
   imports: [

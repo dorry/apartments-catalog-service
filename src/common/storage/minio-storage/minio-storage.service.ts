@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as Minio from 'minio';
 import { ConfigService } from '@nestjs/config';
+import { HttpProxyAgent } from 'http-proxy-agent';
 
 @Injectable()
 export class MinioStorageService {
@@ -14,6 +15,9 @@ export class MinioStorageService {
       useSSL: this.configService.get('MINIO_USE_SSL') === 'true',
       accessKey: this.configService.get('MINIO_ACCESS_KEY'),
       secretKey: this.configService.get('MINIO_SECRET_KEY'),
+      transportAgent: new HttpProxyAgent(
+        this.configService.get('MINIO_PROXY_URL'),
+      ),
     });
     this.bucketName = this.configService.get('MINIO_BUCKET_NAME');
   }
@@ -21,7 +25,11 @@ export class MinioStorageService {
   async createBucketIfNotExists() {
     const bucketExists = await this.minioClient.bucketExists(this.bucketName);
     if (!bucketExists) {
-      await this.minioClient.makeBucket(this.bucketName, 'eu-west-1');
+      await this.minioClient.makeBucket(this.bucketName, 'eu-west-1', {
+        ObjectLocking: false,
+      });
+
+      const bucket = this.minioClient.setBucketPolicy(this.bucketName, '');
     }
   }
   async bucketExists() {
@@ -36,7 +44,7 @@ export class MinioStorageService {
       file.buffer,
       file.size,
     );
-    return fileName;
+    return await this.getFileUrl(fileName);
   }
 
   async getFileUrl(fileName: string) {

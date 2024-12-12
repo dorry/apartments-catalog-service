@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CreateApartmentDto } from './dto/create-apartment.dto';
 import { Apartment } from './entities/apartments.schema';
 import { ApartmentsRepository } from './apartments.repository';
-import { MinioStorageService } from 'src/common/storage/minio-storage/minio-storage.service';
-import { PageDto } from 'src/common/dto/page.dto';
+import { MinioStorageService } from '../../common/storage/minio-storage/minio-storage.service';
+import { PageDto } from '../../common/dto/page.dto';
 
 @Injectable()
 export class ApartmentsService {
@@ -16,21 +16,25 @@ export class ApartmentsService {
     createApartmentDto: CreateApartmentDto,
     imagesArray: Array<Express.Multer.File>,
   ): Promise<Apartment> {
-    // const uploadImages = await Promise.all(
-    //   imagesArray.map((image) => {
-    //     return this.minioStorageService.uploadFile(image);
-    //   }),
-    // );
-    // const fileName = await this.minioStorageService.bucketExists();
-    // console.log(fileName);
-    const doc = {
-      ...createApartmentDto,
-      images: ['https://nextui.org/images/card-example-2.jpeg'],
-    };
-    console.log(doc);
-    const createdApartment = await this.apartmentRepository.create(doc);
+    try {
+      const images = await Promise.all(
+        imagesArray.map((image) => {
+          return this.minioStorageService.uploadFile(image);
+        }),
+      );
 
-    return createdApartment;
+      const doc = {
+        ...createApartmentDto,
+        images,
+        // images: ['https://nextui.org/images/card-example-2.jpeg'],
+      };
+      const createdApartment = await this.apartmentRepository.create(doc);
+
+      return createdApartment;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
   }
 
   async findById(id: string): Promise<Apartment> {
@@ -38,7 +42,6 @@ export class ApartmentsService {
   }
   async findAll(searchQuery: string, pageNumber: number, pageSize: number) {
     const documents = await this.apartmentRepository.find(
-      {},
       pageNumber,
       pageSize,
       searchQuery,

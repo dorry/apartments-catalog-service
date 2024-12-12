@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import { AbstractDocument } from 'src/common/database/abstract.schema';
+import { AbstractDocument } from '../../../common/database/abstract.schema';
 // TODO: Add index
 @Schema()
 export class Apartment extends AbstractDocument {

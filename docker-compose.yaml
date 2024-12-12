@@ -4,25 +4,35 @@ services:
       context: .
       dockerfile: ./dockerfile
       target: development
-    command: npm run start:dev 
+    command: npm run start:dev
     ports:
       - 3001:3001
     volumes:
       - .:/usr/src/app
     depends_on:
       - mongo
+
   mongo:
     image: mongo
-
+    ports:
+      - 27017:27017
   minio:
     image: minio/minio
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_DOMAIN: localhost
+      MINIO_SERVER_URL: http://localhost:9000
+      # Force token creation
+      # MINIO_FORCE_NEW_KEYS: 'yes'
+      # MINIO_CI_CD: 'on'
+      # MINIO_PROMETHEUS_AUTH_TYPE: 'public'
+
+      # MINIO_BROWSER_REDIRECT_URL: 'http://localhost:9001'
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - '9000:9000'
+      - '9001:9001'
     volumes:
       - minio-data:/data
 

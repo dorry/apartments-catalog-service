@@ -7,9 +7,12 @@ import { ConfigModule } from '../config/config.module';
   imports: [
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        uri: configService.get('MONGODB_URI'),
-      }),
+      useFactory: (configService: ConfigService) => {
+        console.log('MONGODB_URI:', configService.get('MONGODB_URI'));
+        return {
+          uri: configService.get('MONGODB_URI'),
+        };
+      },
       inject: [ConfigService],
     }),
   ],
