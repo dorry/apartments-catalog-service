@@ -1,4 +1,4 @@
-export class GetApartmentDto {
+export class GetApartmentDetailsDto {
   id: string;
   name: string;
   number: string;

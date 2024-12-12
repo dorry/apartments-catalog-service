@@ -1,4 +1,9 @@
-import { Controller, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Query,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
 import { Body, Delete, Get, Param, Post } from '@nestjs/common';
 import { CreateApartmentDto } from './dto/create-apartment.dto';
 import { ApartmentsService } from './apartments.service';
@@ -10,11 +15,7 @@ export class ApartmentsController {
   constructor(private readonly apartmentsService: ApartmentsService) {}
 
   @Post()
-  @UseInterceptors(
-    FilesInterceptor('files', 4, {
-      storage: diskStorage({ destination: './uploads' }),
-    }),
-  )
+  @UseInterceptors(FilesInterceptor('files', 4))
   async create(
     @Body() createApartmentDto: CreateApartmentDto,
     @UploadedFiles() images: Array<Express.Multer.File>,
@@ -23,18 +24,26 @@ export class ApartmentsController {
     return await this.apartmentsService.create(createApartmentDto, images);
   }
 
-  //   @Delete(':id')
-  //   async remove(@Param('id') id: string) {
-  //     return await this.apartmentsService.remove(id);
-  //   }
+  // @Delete(':id')
+  // async remove(@Param('id') id: string) {
+  //   return await this.apartmentsService.remove(id);
+  // }
 
-  //   @Get()
-  //   async findAll() {
-  //     return await this.apartmentsService.findAll();
-  //   }
+  @Get()
+  async findAll(
+    @Query('search') searchQuery: string = '',
+    @Query('page') pageNumber = 1,
+    @Query('pageSize') pageSize = 10,
+  ) {
+    return await this.apartmentsService.findAll(
+      searchQuery,
+      pageNumber,
+      pageSize,
+    );
+  }
 
-  //   @Get(':id')
-  //   async findOne(@Param('id') id: string) {
-  //     return await this.apartmentsService.findOne(id);
-  //   }
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return await this.apartmentsService.findById(id);
+  }
 }

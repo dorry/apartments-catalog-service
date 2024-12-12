@@ -1,4 +1,4 @@
-import { Document, FilterQuery, Model, Types, UpdateQuery } from 'mongoose';
+import { FilterQuery, Model, Types, UpdateQuery } from 'mongoose';
 import { Logger, NotFoundException } from '@nestjs/common';
 import { AbstractDocument } from './abstract.schema';
 
@@ -7,7 +7,9 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
 
   constructor(protected readonly model: Model<TDocument>) {}
 
-  async create(document: Omit<TDocument, '_id'>): Promise<TDocument> {
+  async create(
+    document: Omit<TDocument, '_id' | 'created'>,
+  ): Promise<TDocument> {
     const createdDocument = new this.model({
       ...document,
       _id: new Types.ObjectId(),
@@ -45,8 +47,43 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     return document;
   }
 
-  async find(filterQuery: FilterQuery<TDocument>): Promise<TDocument[]> {
-    return await this.model.find(filterQuery).lean<TDocument[]>(true);
+  async find(
+    filterQuery: FilterQuery<TDocument>,
+    page: number,
+    pageSize: number,
+    query?: string,
+  ): Promise<TDocument[]> {
+    const searchRegex = new RegExp(query, 'i');
+
+    if (query) {
+      filterQuery = {
+        ...filterQuery,
+        $or: [
+          {
+            name: searchRegex,
+          },
+          {
+            number: searchRegex,
+          },
+          {
+            project: searchRegex,
+          },
+        ],
+      };
+    }
+
+    const skip = (page - 1) * pageSize;
+
+    return await this.model
+      .find(filterQuery)
+      .skip(skip)
+      .limit(pageSize)
+      .lean<TDocument[]>(true);
+  }
+
+  async getTotalPages(pageSize: number): Promise<number> {
+    const count = await this.model.countDocuments();
+    return Math.ceil(count / pageSize);
   }
 
   async findOneAndDelete(
