@@ -4,6 +4,7 @@ import { Apartment } from './entities/apartments.schema';
 import { ApartmentsRepository } from './apartments.repository';
 import { MinioStorageService } from '../../common/storage/minio-storage/minio-storage.service';
 import { PageDto } from '../../common/dto/page.dto';
+import { FilterQuery } from 'mongoose';
 
 @Injectable()
 export class ApartmentsService {
@@ -41,12 +42,32 @@ export class ApartmentsService {
     return await this.apartmentRepository.findOne({ _id: id });
   }
   async findAll(searchQuery: string, pageNumber: number, pageSize: number) {
+    const searchRegex = new RegExp(searchQuery, 'i');
+
+    const filterQuery: FilterQuery<Apartment> = searchQuery
+      ? {
+          $or: [
+            {
+              name: searchRegex,
+            },
+            {
+              number: searchRegex,
+            },
+            {
+              project: searchRegex,
+            },
+          ],
+        }
+      : {};
     const documents = await this.apartmentRepository.find(
       pageNumber,
       pageSize,
-      searchQuery,
+      filterQuery,
     );
-    const totalPages = await this.apartmentRepository.getTotalPages(pageSize);
+    const totalPages = await this.apartmentRepository.getTotalPages(
+      pageSize,
+      filterQuery,
+    );
 
     return new PageDto(documents, { totalPages });
   }

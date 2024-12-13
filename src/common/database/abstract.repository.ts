@@ -34,8 +34,11 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     return await this.model.find(filterQuery).lean<TDocument[]>(true);
   }
 
-  async getTotalPages(pageSize: number): Promise<number> {
-    const count = await this.model.countDocuments();
+  async getTotalPages(
+    pageSize: number,
+    filterQuery: FilterQuery<TDocument> = {},
+  ): Promise<number> {
+    const count = await this.model.countDocuments(filterQuery);
     return Math.ceil(count / pageSize);
   }
 

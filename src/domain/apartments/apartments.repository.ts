@@ -19,26 +19,8 @@ export class ApartmentsRepository extends AbstractRepository<Apartment> {
   async find(
     page: number,
     pageSize: number,
-    query?: string,
+    filterQuery: FilterQuery<Apartment> = {},
   ): Promise<ListApartmentDto[]> {
-    const searchRegex = new RegExp(query, 'i');
-
-    const filterQuery: FilterQuery<Apartment> = query
-      ? {
-          $or: [
-            {
-              name: searchRegex,
-            },
-            {
-              number: searchRegex,
-            },
-            {
-              project: searchRegex,
-            },
-          ],
-        }
-      : {};
-
     const skip = (page - 1) * pageSize;
 
     return await this.model
