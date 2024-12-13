@@ -9,18 +9,24 @@ import { CreateApartmentDto } from './dto/create-apartment.dto';
 import { ApartmentsService } from './apartments.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Response as Res } from 'express';
+import ApartmentsMapper from './mapper/apartments.mapper';
 
 @Controller('apartments')
 export class ApartmentsController {
   constructor(private readonly apartmentsService: ApartmentsService) {}
 
   @Post()
-  @UseInterceptors(FilesInterceptor('images[]', 4))
+  @UseInterceptors(FilesInterceptor('images', 4))
   async create(
     @Body() createApartmentDto: CreateApartmentDto,
     @UploadedFiles() images: Array<Express.Multer.File>,
   ) {
-    return await this.apartmentsService.create(createApartmentDto, images);
+    const apartmentDocument = await this.apartmentsService.create(
+      createApartmentDto,
+      images,
+    );
+    const apartmentMapper = new ApartmentsMapper();
+    return apartmentMapper.apartmentDocumentToApartmentDto(apartmentDocument);
   }
 
   @Get('/redirect')

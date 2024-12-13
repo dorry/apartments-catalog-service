@@ -11,6 +11,7 @@ services:
       - .:/usr/src/app
     depends_on:
       - mongo
+      - minio
 
   mongo:
     image: mongo
